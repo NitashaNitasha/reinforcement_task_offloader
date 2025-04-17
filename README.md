@@ -12,8 +12,6 @@ The system consists of the following components:
 4. **Data Generation**: Tools to create synthetic datasets for training and evaluation.
 5. **Visualization**: Tools for analyzing and plotting training/evaluation metrics.
 
-![System Architecture](system_architecture.png)
-
 ## Key Features
 
 - **Intelligent Function Offloading**: Uses DRL to make optimal offloading decisions based on task characteristics, device state, edge server state, and network conditions.
@@ -35,7 +33,7 @@ The system consists of the following components:
 1. Clone the repository:
    ```
    git clone https://github.com/NitashaNitasha/reinforcement_task_offloader.git
-   cd edge-computing-drl
+   cd reinforcement_task_offloader
    ```
 
 2. Install dependencies:
