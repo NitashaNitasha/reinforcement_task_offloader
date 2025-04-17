@@ -15,7 +15,7 @@ class EdgeComputingEnvironment(gym.Env):
     Simulates IoT devices and edge servers with task offloading decisions
     """
     
-    def __init__(self, dataset_path='data/processed/synthetic_dataset.csv', 
+    def __init__(self, dataset_path='data/synthetic_dataset.csv',
                  simulation_steps=1000, batch_size=32, use_cache=False,
                  redis_host='localhost', redis_port=6379):
         """

@@ -52,12 +52,12 @@ def setup_argparse():
     generate_parser = subparsers.add_parser('generate', help='Generate synthetic dataset')
     generate_parser.add_argument('--samples', type=int, default=5000,
                               help='Number of samples to generate')
-    generate_parser.add_argument('--output', type=str, default='data/processed/synthetic_dataset.csv',
+    generate_parser.add_argument('--output', type=str, default='data/synthetic_dataset.csv',
                               help='Output path for the dataset')
 
     # Train command
     train_parser = subparsers.add_parser('train', help='Train the MAPPO agent')
-    train_parser.add_argument('--dataset', type=str, default='data/processed/synthetic_dataset.csv',
+    train_parser.add_argument('--dataset', type=str, default='data/synthetic_dataset.csv',
                            help='Path to the dataset')
     train_parser.add_argument('--config', type=str, default='experiments/default_config.yaml',
                            help='Path to the configuration file')
