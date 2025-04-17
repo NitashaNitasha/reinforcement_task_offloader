@@ -38,6 +38,8 @@ The system consists of the following components:
 
 2. Install dependencies:
    ```
+   python -m venv venv
+   ./venv/Scripts/activate
    pip install -r requirements.txt
    ```
 
