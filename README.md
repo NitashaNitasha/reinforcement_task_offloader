@@ -62,19 +62,19 @@ The system consists of the following components:
 ```bash
 python main.py train --config experiments/dqn_config.yaml --episodes 1000 --steps 1000
 ```
-### 1. Train the PPO agent
+### 3. Train the PPO agent
 
 ```bash
  python main.py train --config experiments/ppo_config.yaml --episodes 100 --steps 1000
 
 ```
-### 3. Evaluate a trained model
+### 4. Evaluate a trained model
 
 ```bash
 python main.py evaluate --model models/agent_0_final.pth --dataset synthetic_dataset.csv --use-cache
 ```
 
-### 4. Visualize results
+### 5. Visualize results
 
 ```bash
 python visualization.py
