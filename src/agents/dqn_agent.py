@@ -24,7 +24,7 @@ class DQNAgent:
     def __init__(self, observation_space, action_space,
                  learning_rate=1e-3, gamma=0.99,
                  epsilon_start=1.0, epsilon_min=0.05, epsilon_decay=0.95,
-                 buffer_size=10000, batch_size=64, hidden_dim=128):
+                 buffer_size=10000, batch_size=1024, hidden_dim=128):
 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.obs_dim = observation_space.shape[0]

@@ -54,18 +54,18 @@ The system consists of the following components:
 ### 1. Train the MAPPO agent
 
 ```bash
- python main.py train --config experiments/mappo_config.yaml --episodes 100 --steps 1000
+ python main.py train --config experiments/mappo_config.yaml --episodes 1000 --steps 1000 --use-cache
 
 ```
 ### 2. Train the DQN agent
 
 ```bash
-python main.py train --config experiments/dqn_config.yaml --episodes 1000 --steps 1000
+python main.py train --config experiments/dqn_config.yaml --episodes 1000 --steps 1000 --use-cache
 ```
 ### 1. Train the PPO agent
 
 ```bash
- python main.py train --config experiments/ppo_config.yaml --episodes 100 --steps 1000
+ python main.py train --config experiments/ppo_config.yaml --episodes 1000 --steps 1000 --use-cache
 
 ```
 ### 3. Evaluate a trained model

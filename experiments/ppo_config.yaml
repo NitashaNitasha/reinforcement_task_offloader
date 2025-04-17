@@ -24,7 +24,7 @@ agent:
 
 # Training parameters
 training:
-  epochs: 100
+  epochs: 1000
   update_interval: 2048
   n_updates_per_iter: 10
   test_interval: 5

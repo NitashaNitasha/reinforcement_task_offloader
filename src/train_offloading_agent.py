@@ -130,7 +130,7 @@ def train_agent_with_per_epoch_metrics(agent, env, config, base_metrics, metrics
     Returns:
         dict: Metrics for the final epoch
     """
-    n_episodes = config.get('episodes', 100)
+    n_episodes = config.get('episodes', 1000)
     max_steps_per_episode = config.get('steps', 1000)
 
     all_rewards = []
