@@ -1,0 +1,50 @@
+# Default configuration for edge computing offloading experiments
+# Environment parameters
+environment:
+  simulation_steps: 1000
+  batch_size: 32
+  dataset_path: "data/processed/synthetic_dataset.csv"
+  use_cache: true
+  redis_host: "localhost"
+  redis_port: 6379
+
+# MAPPO Agent hyperparameters
+agent:
+  n_agents: 3
+  learning_rate: 0.0003
+  gamma: 0.99
+  gae_lambda: 0.95
+  clip_param: 0.2
+  value_loss_coef: 0.5
+  entropy_coef: 0.01
+  max_grad_norm: 0.5
+  cache_capacity: 10000
+  hidden_dim: 128
+  lstm_dim: 64
+
+# Training parameters
+training:
+  epochs: 100
+  update_interval: 2048
+  n_updates_per_iter: 10
+  test_interval: 5
+  save_interval: 10
+  model_dir: "models/"
+  log_dir: "logs/"
+
+# Evaluation parameters
+evaluation:
+  n_episodes: 20
+  deterministic: true
+  render: false
+
+# Data generation parameters
+data_generation:
+  n_samples: 5000
+  output_path: "data/processed/synthetic_dataset.csv"
+
+# Visualization parameters
+visualization:
+  figsize: [12, 8]
+  dpi: 300
+  save_dir: "results/figures/"

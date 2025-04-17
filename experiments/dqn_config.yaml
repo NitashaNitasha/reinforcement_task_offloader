@@ -1,0 +1,19 @@
+agent_type: DQN
+
+agent:
+  learning_rate: 0.001
+  gamma: 0.99
+  epsilon_start: 1.0
+  epsilon_min: 0.05
+  epsilon_decay: 0.995
+  buffer_size: 10000
+  batch_size: 64
+
+environment:
+  dataset_path: data/processed/synthetic_dataset.csv
+  batch_size: 32
+  use_cache: false
+  simulation_steps: 1000
+
+training:
+  epochs: 100
