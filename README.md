@@ -34,7 +34,7 @@ The system consists of the following components:
 
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/edge-computing-drl.git
+   git clone https://github.com/NitashaNitasha/reinforcement_task_offloader.git
    cd edge-computing-drl
    ```
 
@@ -50,22 +50,23 @@ The system consists of the following components:
 
 ## Usage
 
-### 1. Generate a synthetic dataset
+
+### 1. Train the MAPPO agent
 
 ```bash
-python main.py generate --samples 5000 --output synthetic_dataset.csv
-```
-
-### 2. Train the MAPPO agent
-
-```bash
- python main.py train --config experiments/mappo_config.yaml --episodes 10 --steps 1000
+ python main.py train --config experiments/mappo_config.yaml --episodes 100 --steps 1000
 
 ```
 ### 2. Train the DQN agent
 
 ```bash
-python main.py train --config experiments/dqn_config.yaml --episodes 10 --steps 1000
+python main.py train --config experiments/dqn_config.yaml --episodes 1000 --steps 1000
+```
+### 1. Train the PPO agent
+
+```bash
+ python main.py train --config experiments/ppo_config.yaml --episodes 100 --steps 1000
+
 ```
 ### 3. Evaluate a trained model
 
@@ -143,26 +144,4 @@ python main.py [mode] --help
    - Negative of latency cost if deadline is met
    - Penalty if deadline is violated
 
-## Performance Metrics
-
-- **Latency**: Average task execution time
-- **Cache Hit Ratio**: Percentage of tasks with cached decisions
-- **Offload Ratio**: Percentage of tasks offloaded to edge
-- **Deadline Violations**: Number of tasks that exceeded their deadlines
-- **Reward**: Overall system performance metric
-
-## License
-
-MIT License
-
-## Citation
-
-If you use this code in your research, please cite:
-
-```
-@article{edge_computing_drl,
-  title={Serverless Edge Computing Function Offloading Pipeline using DRL},
-  author={Your Name},
-  year={2025}
-}
 ```
