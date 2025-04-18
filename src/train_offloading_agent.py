@@ -165,6 +165,7 @@ def train_agent_with_per_epoch_metrics(agent, env, config, base_metrics, metrics
             agent_states = [states[i] for i in agent_ids]
             actions, log_probs, values = agent.act(agent_states, agent_ids)
             next_states, rewards, dones, info = env.step(actions)
+            print(f"[DEBUG] Info at step {steps}: {info}")
 
             # Store transition
             agent.store_transition(
@@ -172,6 +173,7 @@ def train_agent_with_per_epoch_metrics(agent, env, config, base_metrics, metrics
             )
 
             # Collect cost-relevant info
+            # Handle both list-of-dicts (multi-agent) and single-dict (your MAPPO case)
             if isinstance(info, list):
                 for agent_info in info:
                     episode_data['CPU_Cycles'].append(agent_info.get('CPU_Cycles', 0.0))
@@ -180,6 +182,14 @@ def train_agent_with_per_epoch_metrics(agent, env, config, base_metrics, metrics
                     episode_data['DataSize_kB'].append(agent_info.get('DataSize_kB', 0.0))
                     episode_data['TotalExecutionTime_s'].append(agent_info.get('TotalExecutionTime_s', 0.0))
                     episode_data['Deadline_s'].append(agent_info.get('Deadline_s', 0.0))
+            elif isinstance(info, dict):
+                # Handles single-agent MAPPO case with list values
+                for key in episode_data.keys():
+                    val_list = info.get(key, [])
+                    if isinstance(val_list, list):
+                        episode_data[key].extend(val_list)
+                    else:
+                        episode_data[key].append(val_list)
 
             states = next_states
             episode_rewards.extend(rewards)
