@@ -126,14 +126,13 @@ def calculate_dqn_complexity(obs_dim, action_dim, hidden_dim, batch_size):
         "per_batch": batch_complexity
     }
 
-def calculate_costs(data):
+def calculate_costs(data,n_agents):
     computation_costs = []
     transmission_costs = []
-    delay_penalties = []
+    delays = []
 
     price_per_ghz_s = 0.001
     price_per_kb = 0.00005
-    delay_penalty_per_s = 0.01
 
     for i in range(len(data['CPU_Cycles'])):
         cpu_cycles = float(data['CPU_Cycles'][i])
@@ -150,19 +149,24 @@ def calculate_costs(data):
             computation_cost = 0.0
 
         transmission_cost = data_size * price_per_kb
-        delay_penalty = max(total_exec_time - deadline, 0) * delay_penalty_per_s
+        delay = max(total_exec_time - deadline, 0)
 
         # 🔍 Debug: print actual values being used
         print(f"[Step {i}] CPU: {cpu_cycles:.4f}, Speed: {min_cpu_speed:.4f}, "
               f"CompCost: {computation_cost:.6f}, DataSize: {data_size:.2f}, "
               f"TransCost: {transmission_cost:.6f}, ExecTime: {total_exec_time:.4f}, "
-              f"Deadline: {deadline:.4f}, DelayPenalty: {delay_penalty:.6f}")
+              f"Deadline: {deadline:.4f}, Delay: {delay:.6f}")
 
         computation_costs.append(computation_cost)
         transmission_costs.append(transmission_cost)
-        delay_penalties.append(delay_penalty)
+        delays.append(delay)
+    try:
+        average_delay = [d/n_agents for d in delays]
+    except ZeroDivisionError:
+        return delays
 
-    return computation_costs, transmission_costs, delay_penalties
+    return computation_costs, transmission_costs, average_delay
+
 
 
 def log_metrics_to_csv(metrics_dict, output_path="results/performance_metrics.csv"):
