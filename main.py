@@ -163,8 +163,8 @@ def train_mode(args):
             epsilon_min=config['agent'].get('epsilon_min', 0.05),
             epsilon_decay=config['agent'].get('epsilon_decay', 0.995),
             buffer_size=config['agent'].get('buffer_size', 10000),
-            # batch_size=config['agent'].get('batch_size', 64),
-            batch_size=128
+            batch_size=config['agent'].get('batch_size', 64),
+
         )
         train_fn = train_dqn_with_per_epoch_metrics
 

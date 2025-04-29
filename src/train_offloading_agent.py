@@ -165,6 +165,7 @@ def train_agent_with_per_epoch_metrics(agent, env, config, base_metrics, metrics
             agent_states = [states[i] for i in agent_ids]
             actions, log_probs, values = agent.act(agent_states, agent_ids)
             next_states, rewards, dones, info = env.step(actions)
+            # print(f"[DEBUG] Info at step {steps}: {info}")
 
             # Store transition
             agent.store_transition(
@@ -172,6 +173,7 @@ def train_agent_with_per_epoch_metrics(agent, env, config, base_metrics, metrics
             )
 
             # Collect cost-relevant info
+            # Handle both list-of-dicts (multi-agent) and single-dict (your MAPPO case)
             if isinstance(info, list):
                 for agent_info in info:
                     episode_data['CPU_Cycles'].append(agent_info.get('CPU_Cycles', 0.0))
@@ -180,6 +182,14 @@ def train_agent_with_per_epoch_metrics(agent, env, config, base_metrics, metrics
                     episode_data['DataSize_kB'].append(agent_info.get('DataSize_kB', 0.0))
                     episode_data['TotalExecutionTime_s'].append(agent_info.get('TotalExecutionTime_s', 0.0))
                     episode_data['Deadline_s'].append(agent_info.get('Deadline_s', 0.0))
+            elif isinstance(info, dict):
+                # Handles single-agent MAPPO case with list values
+                for key in episode_data.keys():
+                    val_list = info.get(key, [])
+                    if isinstance(val_list, list):
+                        episode_data[key].extend(val_list)
+                    else:
+                        episode_data[key].append(val_list)
 
             states = next_states
             episode_rewards.extend(rewards)
@@ -235,14 +245,14 @@ def train_agent_with_per_epoch_metrics(agent, env, config, base_metrics, metrics
         # Cost calculation
         required_fields = list(episode_data.keys())
         if all(len(episode_data[field]) > 0 for field in required_fields):
-            comp_costs, trans_costs, delay_penalties = calculate_costs(episode_data)
+            comp_costs, trans_costs, average_delay = calculate_costs(episode_data,agent.n_agents)
             epoch_metrics['computation_cost'] = np.mean(comp_costs)
             epoch_metrics['transmission_cost'] = np.mean(trans_costs)
-            epoch_metrics['delay_penalty'] = np.mean(delay_penalties)
+            epoch_metrics['average_delay'] = np.mean(average_delay)
         else:
             epoch_metrics['computation_cost'] = 0.0
             epoch_metrics['transmission_cost'] = 0.0
-            epoch_metrics['delay_penalty'] = 0.0
+            epoch_metrics['average_delay'] = 0.0
 
         # Finalize metrics
         epoch_metrics['training_time'] = epoch_time
@@ -294,7 +304,7 @@ def train_dqn_with_per_epoch_metrics(agent, env, config, base_metrics, metrics_f
             'epoch', 'reward', 'epsilon', 'loss', 'training_time',
             'agent_type', 'params', 'inference_time', 'estimated_cost',
             'steps_per_episode', 'n_agents',
-            'computation_cost', 'transmission_cost', 'delay_penalty'
+            'computation_cost', 'transmission_cost', 'average_delay'
         ]
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
@@ -363,16 +373,16 @@ def train_dqn_with_per_epoch_metrics(agent, env, config, base_metrics, metrics_f
         # Compute cost metrics if data is valid
         required_fields = list(episode_data.keys())
         if all(len(episode_data[field]) == episode_step for field in required_fields):
-            comp_costs, trans_costs, delay_penalties = calculate_costs(episode_data)
+            comp_costs, trans_costs, average_delay = calculate_costs(episode_data,1)
             epoch_metrics['computation_cost'] = np.mean(comp_costs)
             epoch_metrics['transmission_cost'] = np.mean(trans_costs)
-            epoch_metrics['delay_penalty'] = np.mean(delay_penalties)
+            epoch_metrics['average_delay'] = np.mean(average_delay)
 
         else:
             print("Skipping cost calculation due to missing or mismatched data lengths.")
             epoch_metrics['computation_cost'] = 0.0
             epoch_metrics['transmission_cost'] = 0.0
-            epoch_metrics['delay_penalty'] = 0.0
+            epoch_metrics['average_delay'] = 0.0
 
         # # Log to console
         # print(f"[Episode {epoch}] Total Reward: {total_reward:.2f}, "
