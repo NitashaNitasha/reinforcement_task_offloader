@@ -19,7 +19,7 @@ from src.utils.performance_metrics import log_metrics_to_csv
 from src.agents.mappo_agent import MAPPOAgent
 from src.agents.dqn_agent import DQNAgent
 from src.environment.edge_environment import EdgeComputingEnvironment
-
+from src.utils.action_logging import log_agent_actions_to_csv
 logger = logging.getLogger(__name__)
 
 
@@ -64,9 +64,11 @@ def evaluate_agent(agent, env, config, n_episodes=20, verbose=True):
         while not done:
             # Select actions
             actions, _, _ = agent.act(states)
+
             
             # Execute actions
             next_states, episode_reward, dones, info = env.step(actions)
+
             
             # Update states
             states = next_states
@@ -76,6 +78,7 @@ def evaluate_agent(agent, env, config, n_episodes=20, verbose=True):
             episode_rewards.extend(episode_reward)
             episode_latencies.extend(info['latencies'])
             episode_deadline_violations.extend(info['deadline_violations'])
+
         
         # Record episode statistics
         rewards.append(np.mean(episode_rewards))
@@ -165,7 +168,12 @@ def train_agent_with_per_epoch_metrics(agent, env, config, base_metrics, metrics
             agent_states = [states[i] for i in agent_ids]
             actions, log_probs, values = agent.act(agent_states, agent_ids)
             next_states, rewards, dones, info = env.step(actions)
-            # print(f"[DEBUG] Info at step {steps}: {info}")
+            # Add this before or after `env.step(actions)`
+            if 'actions' not in episode_data:
+                episode_data['actions'] = []
+
+            episode_data['actions'].extend(actions)
+
 
             # Store transition
             agent.store_transition(
@@ -270,6 +278,7 @@ def train_agent_with_per_epoch_metrics(agent, env, config, base_metrics, metrics
         all_rewards.append(total_reward)
         avg_rewards.append(sum(all_rewards[-100:]) / min(len(all_rewards), 100))
 
+        log_agent_actions_to_csv(episode_data, epoch, "/results", agent_ids)
         if metrics_file:
             log_metrics_to_csv(epoch_metrics, metrics_file)
 
@@ -333,7 +342,13 @@ def train_dqn_with_per_epoch_metrics(agent, env, config, base_metrics, metrics_f
 
         while not done and episode_step < steps_per_episode:
             action = agent.select_action(state)
+            if 'actions' not in episode_data:
+                episode_data['actions'] = []
+
+            episode_data['actions'].append(action)
+
             next_state, reward, done, info = env.step([action])
+
 
             # Collect required info for cost metrics
             episode_data['CPU_Cycles'].append(info['CPU_Cycles'][0])
@@ -397,6 +412,7 @@ def train_dqn_with_per_epoch_metrics(agent, env, config, base_metrics, metrics_f
         for key, value in epoch_metrics.items():
             all_metrics[key].append(value)
 
+        log_agent_actions_to_csv(episode_data, epoch, "/results",[0],"dqn")
         if hasattr(agent, 'decay_epsilon'):
             agent.decay_epsilon()
 
